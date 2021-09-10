@@ -3,6 +3,7 @@ package config
 import (
 	"errors"
 	"log"
+	"path/filepath"
 	"time"
 
 	"github.com/spf13/viper"
@@ -10,8 +11,9 @@ import (
 
 // App config struct
 type Config struct {
-	Server ServerConfig
-	Logger Logger
+	Server   ServerConfig
+	Postgres PostgresConfig
+	Logger   Logger
 }
 
 // Server config struct
@@ -39,12 +41,23 @@ type Logger struct {
 	Level             string
 }
 
+// Postgresql config
+type PostgresConfig struct {
+	PostgresqlHost     string
+	PostgresqlPort     string
+	PostgresqlUser     string
+	PostgresqlPassword string
+	PostgresqlDbname   string
+	PostgresqlSSLMode  bool
+	PgDriver           string
+}
+
 // Load config file from given path
 func LoadConfig(filename string) (*viper.Viper, error) {
 	v := viper.New()
 
 	v.SetConfigName(filename)
-	v.AddConfigPath(".")
+	v.AddConfigPath(filepath.Join("..", "..", "config"))
 	v.AutomaticEnv()
 	if err := v.ReadInConfig(); err != nil {
 		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
