@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/ferjmc/clean-example/config"
+	"github.com/ferjmc/clean-example/internal/server"
 	"github.com/ferjmc/clean-example/pkg/db/postgres"
 	"github.com/ferjmc/clean-example/pkg/logger"
 )
@@ -36,6 +37,11 @@ func main() {
 		appLogger.Infof("Postgres connected, Status: %#v", psqlDB.Stats())
 	}
 	defer psqlDB.Close()
+
+	s := server.NewServer(cfg, psqlDB, appLogger)
+	if err = s.Run(); err != nil {
+		log.Fatal(err)
+	}
 }
 
 // Get config path for local or docker
